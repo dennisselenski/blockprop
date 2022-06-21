@@ -4,14 +4,15 @@ pragma solidity >=0.4.0
 contract BlockProp {
           
           srtruct Stakeholder {
-              int taxID;
+          
+              uint taxID;
               Property[] propertyList;
               
               }
               
               
            struct Property {
-           
+                uint propertyID;
                 //geo Data
                 
            
