@@ -118,7 +118,7 @@ contract blockporb is ERC721, ERC165 {
         uint128 x;
         uint128 y;
         uint128 size;
-        address owner; 
+        address owner;
         uint256 propertyID;
     }
 
@@ -146,8 +146,8 @@ contract blockporb is ERC721, ERC165 {
     // return the maximum size a property object can have
     function maxSize() public view returns (uint128) {
         // half of max uint256 because id is uint256
-		return 2 ** 128 - 1;
-	}
+        return 2 ** 128 - 1;
+    }
 
     // create ID by writing x and y in one variable which produces unique identifier
     function getId(Property prob) public returns (uint256) {
