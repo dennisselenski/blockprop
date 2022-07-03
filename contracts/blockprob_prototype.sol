@@ -3,7 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-contract blockporb is ERC721, ERC165 {
+contract blockporb is ERC721("HelloNft", "HNFT") {
     // property struct
     // TODO rename, Block?
     struct Property {
@@ -23,9 +23,11 @@ contract blockporb is ERC721, ERC165 {
     mapping(address => uint256[]) public ownerToPropertyList;
 
     /*** events ***/
-    event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
-    event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
-    event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
+    //TODO compare https://stackoverflow.com/questions/67485324/solidity-typeerror-overriding-function-is-missing-override-specifier
+    // either inherit ERC721 or implement these events
+    //event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
+    //event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
+    //event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
 
     /*** own functions ***/
     // assign initial property to caller of constructor
@@ -42,14 +44,14 @@ contract blockporb is ERC721, ERC165 {
     }
 
     // create ID by writing x and y in one variable which produces unique identifier
-    function getId(Property prob) public returns (uint256) {
+    function getId(Property memory prob) public returns (uint256) {
         uint256 id = prob.y * maxSize();
         id = id & prob.x;
         return id;
     }
 
     // convinience function to add a Property to an address in all relevant data structures
-    function addStructToAddress(Property prob, address owner) private {
+    function addStructToAddress(Property memory prob, address owner) private {
         prob.owner = owner;
         uint256 id = getId(prob);
         idToProperties[id] = prob;
@@ -72,13 +74,12 @@ contract blockporb is ERC721, ERC165 {
 
     /*** ERC721 functions ***/
     // number of tokens for given owner
-    function balanceOf(address _owner) external view returns (uint256) {
+    function balanceOf(address _owner) public override view returns (uint256) {
         uint256[] memory list = ownerToPropertyList[_owner];
         return list.length;
     }
-
     // owner for property
-    function ownerOf(uint256 _tokenId) external view returns (address) {
+    function ownerOf(uint256 _tokenId) public override view returns (address) {
         return idToProperties[_tokenId].owner;
     }
 
