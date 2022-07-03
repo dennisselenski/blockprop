@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/dennisselenski/blockprop/issues"
   },
-  "homepage": "https://github.com/dennisselenski/blockprop#readme"
+  "homepage": "https://github.com/dennisselenski/blockprop#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.7.0"
+  }
 }
