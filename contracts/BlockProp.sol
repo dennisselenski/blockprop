@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.4.0 
+pragma solidity ^0.8;
 
 contract BlockProp {
           
-          srtruct Stakeholder {
+          struct Stakeholder {
           
               uint taxID;
               Property[] propertyList;

@@ -1,0 +1,196 @@
+{
+  "contractName": "BlockProp",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.15+commit.e14f2714\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/BlockProp.sol\":\"BlockProp\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/BlockProp.sol\":{\"keccak256\":\"0xd0d73182ccade4c080a9729af589001d47c8dbc4e357d9a4434f0fff6ea1ecaa\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://1335e6527f84657d5f378641904633cc1c8de3163d2d7c6001680ad2f5f6ee05\",\"dweb:/ipfs/QmeP6FDkT9JcK6he66QqxY1Ng5tLYtdngnnH78FppFj5Z2\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220ce8963cfaab29a4ff01b698c05d58b351635c85dcbaae6ac5ac3fae5654ed6aa64736f6c634300080f0033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220ce8963cfaab29a4ff01b698c05d58b351635c85dcbaae6ac5ac3fae5654ed6aa64736f6c634300080f0033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "62:334:10:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "62:334:10:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8;\n\ncontract BlockProp {\n          \n          struct Stakeholder {\n          \n              uint taxID;\n              Property[] propertyList;\n              \n              }\n              \n              \n           struct Property {\n                uint propertyID;\n                //geo Data\n                \n           \n           }\n\n\n}\n",
+  "sourcePath": "/Users/leonhardthyssen/Desktop/Neuer Ordner mit Objekten/BCT/blockprop/contracts/BlockProp.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/BlockProp.sol",
+    "exportedSymbols": {
+      "BlockProp": [
+        1732
+      ]
+    },
+    "id": 1733,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1721,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "39:21:10"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "BlockProp",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 1732,
+        "linearizedBaseContracts": [
+          1732
+        ],
+        "name": "BlockProp",
+        "nameLocation": "71:9:10",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "BlockProp.Stakeholder",
+            "id": 1728,
+            "members": [
+              {
+                "constant": false,
+                "id": 1723,
+                "mutability": "mutable",
+                "name": "taxID",
+                "nameLocation": "155:5:10",
+                "nodeType": "VariableDeclaration",
+                "scope": 1728,
+                "src": "150:10:10",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1722,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "150:4:10",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1727,
+                "mutability": "mutable",
+                "name": "propertyList",
+                "nameLocation": "187:12:10",
+                "nodeType": "VariableDeclaration",
+                "scope": 1728,
+                "src": "176:23:10",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_struct$_Property_$1731_storage_$dyn_storage_ptr",
+                  "typeString": "struct BlockProp.Property[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "id": 1725,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 1724,
+                      "name": "Property",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1731,
+                      "src": "176:8:10"
+                    },
+                    "referencedDeclaration": 1731,
+                    "src": "176:8:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Property_$1731_storage_ptr",
+                      "typeString": "struct BlockProp.Property"
+                    }
+                  },
+                  "id": 1726,
+                  "nodeType": "ArrayTypeName",
+                  "src": "176:10:10",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_Property_$1731_storage_$dyn_storage_ptr",
+                    "typeString": "struct BlockProp.Property[]"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Stakeholder",
+            "nameLocation": "111:11:10",
+            "nodeType": "StructDefinition",
+            "scope": 1732,
+            "src": "104:127:10",
+            "visibility": "public"
+          },
+          {
+            "canonicalName": "BlockProp.Property",
+            "id": 1731,
+            "members": [
+              {
+                "constant": false,
+                "id": 1730,
+                "mutability": "mutable",
+                "name": "propertyID",
+                "nameLocation": "312:10:10",
+                "nodeType": "VariableDeclaration",
+                "scope": 1731,
+                "src": "307:15:10",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1729,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "307:4:10",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Property",
+            "nameLocation": "280:8:10",
+            "nodeType": "StructDefinition",
+            "scope": 1732,
+            "src": "273:119:10",
+            "visibility": "public"
+          }
+        ],
+        "scope": 1733,
+        "src": "62:334:10",
+        "usedErrors": []
+      }
+    ],
+    "src": "39:358:10"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.15+commit.e14f2714.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.8",
+  "updatedAt": "2022-07-03T17:00:57.802Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
