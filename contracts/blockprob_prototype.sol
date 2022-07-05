@@ -23,7 +23,6 @@ contract blockporb is ERC721("HelloNft", "HNFT") {
 
 
     /*** data structures ***/
-    address[] ownerArr;
     // id to property struct
     mapping(uint256 => Property) public idToProperties;
     // owner address to id list
@@ -94,10 +93,7 @@ contract blockporb is ERC721("HelloNft", "HNFT") {
 
     // function for the land registry to registry owners
     function registrateOwner(address _taxID, address payable _etheriumID, string memory _name) private returns (bool) {
-            if(ownerArr.)
             idToOwner[_taxID] = Owner(_taxID, _etheriumID, _name);
-
-            ownerArr.push(_taxID);
             return true;
     }
 
