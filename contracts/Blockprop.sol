@@ -123,7 +123,7 @@ contract Blockprop is ERC721("Blockprop", "BP") {
 
     // Returns the maximum size a property object can have
     function maxSize() public pure returns (uint128) {
-        return 2 ** 128 - 1;
+        return 2 ** 128 - 2; // We do -2 because we want an even number for further division
     }
 
     // Create a unique blockID by writing x and y in one variable
@@ -146,6 +146,77 @@ contract Blockprop is ERC721("Blockprop", "BP") {
             }
         }
         return totalArea;
+    }
+
+    function splitBlock(uint _blockID) public returns (uint[4] memory) {
+        // Get the block struct from our contract
+        Block storage b = blocks[_blockID];
+
+        // If this block does not exists, throw an error
+        assert(b.owner != address(0));
+
+        // If block size is 1, we have already reached the minimal division
+        assert(b.size > 1);
+
+        // Save the old propertyID
+        uint oldPropertyID = b.propertyID;
+
+        // Divide the size by two, the point (x,y) stays the same
+        b.size = b.size / 2;
+
+        // Create the 3 new blocks
+        Block memory b2 = Block(b.x + b.size, b.y, b.size, b.owner, oldPropertyID);
+        Block memory b3 = Block(b.x, b.y + b.size, b.size, b.owner, oldPropertyID);
+        Block memory b4 = Block(b.x + b.size, b.y + b.size, b.size, b.owner, oldPropertyID);
+
+        // Now we need to modify the propertyID from all blocks. We first get
+        // all blocks that belong to the property in order to calcualte it
+        Block[] storage property = properties[oldPropertyID];
+        assert(property.length != 0);
+
+        // Let's iterate over all the blocks of the property and replace the
+        // block we're dividing
+        for (uint i = 0; i < property.length; i++) {
+            if(getBlockID(property[i]) == _blockID) {
+                property[i] = b;
+                continue;
+            }
+        }
+        // Let's add the three new blocks to the array
+        property.push(b2);
+        property.push(b3);
+        property.push(b4);
+
+        // Let's create the propertyID
+        uint newPropertyID = calculatePropertyID(property);
+
+        // Update the propertyID in the property array
+        for (uint i = 0; i < property.length; i++) {
+                property[i].propertyID = newPropertyID;
+        }
+
+        // Move the array to the new index
+        properties[newPropertyID] = property;
+        delete properties[oldPropertyID];
+
+        // Now update the blocks array
+        b.propertyID = newPropertyID;
+        b2.propertyID = newPropertyID;
+        b3.propertyID = newPropertyID;
+        b4.propertyID = newPropertyID;
+        blocks[getBlockID(b2)] = b2;
+        blocks[getBlockID(b3)] = b3;
+        blocks[getBlockID(b4)] = b4;
+
+        // Update the assets array
+        uint[] storage list = assets[b.owner];
+        for (uint i = 0; i < list.length; i++) {
+            if(list[i] == oldPropertyID) {
+                list[i] = newPropertyID;
+            }
+        }
+
+        return [ getBlockID(b), getBlockID(b2), getBlockID(b3), getBlockID(b4) ];
     }
 
     // ERC721 functions
