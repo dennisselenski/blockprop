@@ -3,6 +3,7 @@ pragma solidity ^0.8;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 // Our contract inherits from ERC721. The ERC721 constructor expectes a name
 // and a symbol for our token
@@ -46,31 +47,78 @@ contract Blockprop is ERC721("Blockprop", "BP") {
     // calls the constructor. The authority owns everything at the beginning.
     // We also assume that the taxID of the authority is 0
     constructor() {
-        // We assume the propertyID of the very first property is just 0. TODO: change
-        uint256 propertyID = 0;
-
         // Create the authority and add it to the owners mapping. We assume the
         // taxID of the authority is 0
         authority = msg.sender;
         owners[msg.sender] = Owner("Authority", "0", payable(authority), true);
 
-        // Create the initial block, assign it to the authority and add it to
-        // the blocks mapping
-        Block memory firstBlock = Block(0, 0, maxSize(), payable(msg.sender), propertyID);
-        uint256 blockID = getBlockID(firstBlock);
-        blocks[blockID] = firstBlock;
+        // The blockID of the first block is 0. We create a propertyID by using
+        // only this first block
+        uint firstBlockID = 0;
+        uint[] memory blockIDList;
+        blockIDList[0] = firstBlockID;
+        uint propertyID = calculatePropertyID(blockIDList);
+
+        // Create the initial block and add it to the blocks mapping
+        blocks[firstBlockID] = Block(0, 0, maxSize(), payable(msg.sender), propertyID);
 
         // Create a list with all blocks belonging to the property and add the
         // blocks
-        Block[] storage _blockArray = properties[propertyID];
-        _blockArray.push(firstBlock);
-        properties[propertyID] = _blockArray;
+        Block[] storage blockArray = properties[propertyID];
+        blockArray.push(blocks[firstBlockID]);
+        /* properties[propertyID] = _blockArray; */
 
         // Create an asset list, add the first asset and add the list to the
         // assets maping
-        uint256[] storage _propertyIDList = assets[msg.sender];
-        _propertyIDList.push(propertyID);
-        assets[msg.sender] = _propertyIDList;
+        uint256[] storage propertyIDList = assets[msg.sender];
+        propertyIDList.push(propertyID);
+        /* assets[msg.sender] = _propertyIDList; */
+    }
+
+    function sort(uint[] memory data) public returns(uint[] memory) {
+        quickSort(data, int(0), int(data.length - 1));
+        return data;
+    }
+
+    // Copied from: https://gist.github.com/subhodi/b3b86cc13ad2636420963e692a4d896f
+    function quickSort(uint[] memory arr, int left, int right) internal {
+        int i = left;
+        int j = right;
+        if(i==j) return;
+        uint pivot = arr[uint(left + (right - left) / 2)];
+        while (i <= j) {
+            while (arr[uint(i)] < pivot) i++;
+            while (pivot < arr[uint(j)]) j--;
+            if (i <= j) {
+                (arr[uint(i)], arr[uint(j)]) = (arr[uint(j)], arr[uint(i)]);
+                i++;
+                j--;
+            }
+        }
+        if (left < j)
+            quickSort(arr, left, j);
+        if (i < right)
+            quickSort(arr, i, right);
+    }
+
+    function calculatePropertyID(uint[] memory ids) public returns (uint) {
+        // Sort the array. Note: this is expensive but I don't see a better solution
+        ids = sort(ids);
+
+        // Hash the output string to get the propertyID
+        bytes32 hash = keccak256(abi.encodePacked(ids));
+        return uint(hash);
+    }
+
+    // This function is overloaded if we wanna call it with a block array
+    function calculatePropertyID(Block[] memory _blocks) public returns (uint) {
+        uint[] memory ids;
+
+        // Iterate over all bocks, calculate the blockIDs and add them to an array
+        for(uint i = 0; i < _blocks.length; i++) {
+                ids[i] = getBlockID(_blocks[i]);
+        }
+        return calculatePropertyID(ids);
     }
 
     // Returns the maximum size a property object can have
