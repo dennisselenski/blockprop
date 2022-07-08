@@ -100,8 +100,6 @@ contract Blockprop is ERC721("Blockprop", "BP") {
         return totalArea;
     }
 
-    /* function splitBlock(Block memory _block) public returns () */
-
     // ERC721 functions
 
     // Number of tokens for given owner
