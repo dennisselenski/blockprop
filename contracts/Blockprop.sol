@@ -38,13 +38,6 @@ contract Blockprop is ERC721("Blockprop", "BP") {
     // Mapping to get a list with all propertyIDs from an owner (indexed by the owners add)
     mapping(address => uint256[]) public assets;
 
-    /*** events ***/
-    //TODO compare https://stackoverflow.com/questions/67485324/solidity-typeerror-overriding-function-is-missing-override-specifier
-    // either inherit ERC721 or implement these events
-    //event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
-    //event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
-    //event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
-
     // We assume that only the authority deploys the smart contract and
     // calls the constructor. The authority owns everything at the beginning.
     // We also assume that the taxID of the authority is 0
