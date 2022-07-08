@@ -22,13 +22,15 @@ contract Blockprop is ERC721("Blockprop", "BP") {
         uint128 y;
         uint128 size;
         address owner;
+        // The property ID is the hash over all accending blockIDs belonging to
+        // a property. TODO: write hash function
         uint256 propertyID;
     }
 
     // Mapping to get the owner struct by it's etherID
     mapping(address => Owner) public owners; // formerly idToOwner
 
-    // Mapping to get the block struct by it's unique 256 bit tokenID
+    // Mapping to get the block struct by it's unique 256 bit blockID
     mapping(uint256 => Block) public blocks; // fomerly idToBlock
 
     // Mapping to get a list with all blocks belonging to a property indexed by
@@ -38,16 +40,19 @@ contract Blockprop is ERC721("Blockprop", "BP") {
     // Mapping to get a list with all propertyIDs from an owner (indexed by the owners add)
     mapping(address => uint256[]) public assets;
 
+    address authority;
+
     // We assume that only the authority deploys the smart contract and
     // calls the constructor. The authority owns everything at the beginning.
     // We also assume that the taxID of the authority is 0
     constructor() {
-        // We assume the propertyID of the very first property is just 0
+        // We assume the propertyID of the very first property is just 0. TODO: change
         uint256 propertyID = 0;
 
         // Create the authority and add it to the owners mapping. We assume the
         // taxID of the authority is 0
-        owners[msg.sender] = Owner("Authority", "0", payable(msg.sender), true);
+        authority = msg.sender;
+        owners[msg.sender] = Owner("Authority", "0", payable(authority), true);
 
         // Create the initial block, assign it to the authority and add it to
         // the blocks mapping
@@ -94,6 +99,8 @@ contract Blockprop is ERC721("Blockprop", "BP") {
         }
         return totalArea;
     }
+
+    /* function splitBlock(Block memory _block) public returns () */
 
     // ERC721 functions
 
