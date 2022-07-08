@@ -3,7 +3,6 @@ pragma solidity ^0.8;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
 
 // Our contract inherits from ERC721. The ERC721 constructor expectes a name
 // and a symbol for our token
@@ -24,7 +23,7 @@ contract Blockprop is ERC721("Blockprop", "BP") {
         uint128 size;
         address owner;
         // The property ID is the hash over all accending blockIDs belonging to
-        // a property. TODO: write hash function
+        // a property
         uint256 propertyID;
     }
 
@@ -66,13 +65,11 @@ contract Blockprop is ERC721("Blockprop", "BP") {
         // blocks
         Block[] storage blockArray = properties[propertyID];
         blockArray.push(blocks[firstBlockID]);
-        /* properties[propertyID] = _blockArray; */
 
         // Create an asset list, add the first asset and add the list to the
         // assets maping
         uint256[] storage propertyIDList = assets[msg.sender];
         propertyIDList.push(propertyID);
-        /* assets[msg.sender] = _propertyIDList; */
     }
 
     function sort(uint[] memory data) public returns(uint[] memory) {
