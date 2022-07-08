@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/dennisselenski/blockprop#readme",
   "dependencies": {
-    "@openzeppelin/contracts": "^4.7.0"
+    "@openzeppelin/contracts": "^4.7.0",
+    "openzeppelin-solidity": "^4.6.0"
   }
 }
