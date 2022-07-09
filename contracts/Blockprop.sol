@@ -147,7 +147,7 @@ contract Blockprop is ERC721("Blockprop", "BP") {
     }
 
     // Function to accept a received offer
-    function acceptOffer(uint256 _propertyID) public payable {
+    function acceptOffer(uint256 _propertyID) public {
         require(msg.sender == blocks[_propertyID].owner, "You have to be the owner of the property.");
         require(blocks[_propertyID].requester != address(0), "There is no offer for this property.");      
         blocks[_propertyID].status = saleStatus.Accepted;       
