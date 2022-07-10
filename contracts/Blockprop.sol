@@ -17,6 +17,8 @@ contract Blockprop is ERC721("Blockprop", "BP") {
 
     // Mapping to get the block struct by it's unique 256 bit blockID
     mapping(uint256 => Block) public blocks; // fomerly idToBlock
+    // List containg all blockIDs to access them from the outside (e.g. to get the current status)
+    uint256[] public blocksList;
 
     // Mapping to get a list with all blocks belonging to a property indexed by
     // it's propertyID
@@ -44,6 +46,7 @@ contract Blockprop is ERC721("Blockprop", "BP") {
         Block memory firstBlock = Block(0, 0, maxSize(), payable(msg.sender), propertyID, saleStatus.NotForSale, address(0), 0);
         uint256 blockID = Helpers.getBlockID(firstBlock);
         blocks[blockID] = firstBlock;
+        blocksList.push(blockID);
 
         // Create a list with all blocks belonging to the property and add the
         // blocks
@@ -56,6 +59,11 @@ contract Blockprop is ERC721("Blockprop", "BP") {
         uint256[] storage _propertyIDList = assets[msg.sender];
         _propertyIDList.push(propertyID);
         assets[msg.sender] = _propertyIDList;
+    }
+
+    // retuns the total number of blocks stored in blocksList
+    function getNumberOfBlocks() public view returns(uint256) {
+        return blocksList.length;
     }
 
     // Returns the maximum size a property object can have

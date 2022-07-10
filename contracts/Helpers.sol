@@ -4,7 +4,7 @@ import {Owner, Block, saleStatus} from "./Types.sol";
 
 library Helpers {
 
-function splitBlock(uint _blockID, mapping(uint256 => Block) storage blocks, mapping(uint256 => Block[]) storage properties,     mapping(address => uint256[]) storage assets) public returns (uint[4] memory) {
+function splitBlock(uint _blockID, mapping(uint256 => Block) storage blocks, mapping(uint256 => Block[]) storage properties,     mapping(address => uint256[]) storage assets, uint256[] storage blocksList) public returns (uint[4] memory) {
         // Get the block struct from our contract
         Block storage b = blocks[_blockID];
 
@@ -55,14 +55,21 @@ function splitBlock(uint _blockID, mapping(uint256 => Block) storage blocks, map
         properties[newPropertyID] = property;
         delete properties[oldPropertyID];
 
-        // Now update the blocks array
+        // Now update the blocks mapping/list
         b.propertyID = newPropertyID;
         b2.propertyID = newPropertyID;
         b3.propertyID = newPropertyID;
         b4.propertyID = newPropertyID;
-        blocks[getBlockID(b2)] = b2;
-        blocks[getBlockID(b3)] = b3;
-        blocks[getBlockID(b4)] = b4;
+        // calculate blockIDs once
+        uint256 id2 = getBlockID(b2);
+        uint256 id3 = getBlockID(b3);
+        uint256 id4 = getBlockID(b4);
+        blocks[id2] = b2;
+        blocks[id3] = b3;
+        blocks[id4] = b4;
+        blocksList.push(id2);
+        blocksList.push(id3);
+        blocksList.push(id4);
 
         // Update the assets array
         uint[] storage list = assets[b.owner];
@@ -72,7 +79,7 @@ function splitBlock(uint _blockID, mapping(uint256 => Block) storage blocks, map
             }
         }
 
-        return [ getBlockID(b), getBlockID(b2), getBlockID(b3), getBlockID(b4) ];
+        return [ getBlockID(b), id2, id3, id4 ];
     }
 
     // Create a unique blockID by writing x and y in one variable
