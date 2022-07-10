@@ -83,7 +83,7 @@ contract Blockprop is ERC721("Blockprop", "BP") {
 
     // Returns the maximum size a property object can have
     function maxSize() public pure returns (uint128) {
-        return 2 ** 128 - 1;
+        return type(uint128).max;
     }
 
     // Create a unique blockID by writing x and y in one variable
