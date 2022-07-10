@@ -143,9 +143,9 @@ function splitBlock(uint _blockID) public returns (uint[4] memory) {
         b.size = b.size / 2;
 
         // Create the 3 new blocks
-        Block memory b2 = Block(b.x + b.size, b.y, b.size, b.owner, oldPropertyID);
-        Block memory b3 = Block(b.x, b.y + b.size, b.size, b.owner, oldPropertyID);
-        Block memory b4 = Block(b.x + b.size, b.y + b.size, b.size, b.owner, oldPropertyID);
+        Block memory b2 = Block(b.x + b.size, b.y, b.size, b.owner, oldPropertyID, saleStatus.ForSale, address(0), 0);
+        Block memory b3 = Block(b.x, b.y + b.size, b.size, b.owner, oldPropertyID, saleStatus.ForSale, address(0), 0);
+        Block memory b4 = Block(b.x + b.size, b.y + b.size, b.size, b.owner, oldPropertyID, saleStatus.ForSale, address(0), 0);
 
         // Now we need to modify the propertyID from all blocks. We first get
         // all blocks that belong to the property in order to calcualte it
