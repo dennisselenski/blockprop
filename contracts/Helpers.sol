@@ -84,7 +84,8 @@ function splitBlock(uint _blockID, mapping(uint256 => Block) storage blocks, map
 
     // Create a unique blockID by writing x and y in one variable
     function getBlockID(Block memory _block) public pure returns (uint256) {
-        uint256 id = _block.y >> 128;
+        // solidity shift apparently doesn't work
+        uint256 id = _block.y * 2**128;
         id = id | _block.x;
         return id;
     }

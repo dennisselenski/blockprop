@@ -8,7 +8,7 @@ module.exports = async function(callback) {
 
         for (i = 0; i < length; i++) {
             item = await instance.blocksList.call(i)
-            console.log(item)
+            console.log(Number(item))
         }
 
     }
