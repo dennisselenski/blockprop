@@ -122,7 +122,7 @@ contract Blockprop is ERC721("Blockprop", "BP") {
     }
 
     // Function for the land registry to registrate owners
-    function registrateOwner(string memory _taxID, address payable _etherID, string memory _name) private {
+    function registerOwner(string memory _taxID, address payable _etherID, string memory _name) public {
             //converting to bytes using keccak is needed to compare strings in Solidity
             require(keccak256(bytes(owners[msg.sender].taxID)) == keccak256(bytes("0")), "Only the authority can registry owners.");
             owners[_etherID] = Owner(_name, _taxID, _etherID, false);
