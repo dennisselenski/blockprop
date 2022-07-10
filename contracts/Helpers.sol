@@ -4,27 +4,19 @@ import {Owner, Block, saleStatus} from "./Types.sol";
 
 library Helpers {
 
-function splitBlock(uint _blockID, mapping(uint256 => Block) storage blocks, mapping(uint256 => Block[]) storage properties,     mapping(address => uint256[]) storage assets) public returns (uint[4] memory) {
-        // Get the block struct from our contract
-        Block storage b = blocks[_blockID];
-
-        // If this block does not exists, throw an error
-        assert(b.owner != address(0));
-
-        // If block size is 1, we have already reached the minimal division
-        assert(b.size > 1);
-
-        // Save the old propertyID
-        uint oldPropertyID = b.propertyID;
-
+function splitBlock(address requester, Block storage b) public returns (Block[4] memory) {
         // Divide the size by two, the point (x,y) stays the same
         b.size = b.size / 2;
-
         // Create the 3 new blocks
-        Block memory b2 = Block(b.x + b.size, b.y, b.size, b.owner, oldPropertyID, saleStatus.ForSale, address(0), 0);
-        Block memory b3 = Block(b.x, b.y + b.size, b.size, b.owner, oldPropertyID, saleStatus.ForSale, address(0), 0);
-        Block memory b4 = Block(b.x + b.size, b.y + b.size, b.size, b.owner, oldPropertyID, saleStatus.ForSale, address(0), 0);
-
+        Block memory b2 = Block(b.x + b.size, b.y, b.size, b.owner, saleStatus.ForSale, requester, 0);
+        Block memory b3 = Block(b.x, b.y + b.size, b.size, b.owner, saleStatus.ForSale, requester, 0);
+        Block memory b4 = Block(b.x + b.size, b.y + b.size, b.size, b.owner, saleStatus.ForSale, requester, 0);
+        return [b, b2, b3, b4];
+    }
+/*
+//mapping(uint256 => Block[]) storage properties,     mapping(address => uint256[]) storage assets
+function createProperty(uint _blockID, Block storage b) public returns (Block[4] memory) {
+{
         // Now we need to modify the propertyID from all blocks. We first get
         // all blocks that belong to the property in order to calcualte it
         Block[] storage property = properties[oldPropertyID];
@@ -73,8 +65,8 @@ function splitBlock(uint _blockID, mapping(uint256 => Block) storage blocks, map
         }
 
         return [ getBlockID(b), getBlockID(b2), getBlockID(b3), getBlockID(b4) ];
-    }
-
+}
+*/
     // Create a unique blockID by writing x and y in one variable
     function getBlockID(Block memory _block) public pure returns (uint256) {
         uint256 id = _block.y >> 128;

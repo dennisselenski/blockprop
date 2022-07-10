@@ -41,7 +41,7 @@ contract Blockprop is ERC721("Blockprop", "BP") {
 
         // Create the initial block, assign it to the authority and add it to
         // the blocks mapping
-        Block memory firstBlock = Block(0, 0, maxSize(), payable(msg.sender), propertyID, saleStatus.NotForSale, address(0), 0);
+        Block memory firstBlock = Block(0, 0, maxSize(), payable(msg.sender), saleStatus.NotForSale, address(0), 0);
         uint256 blockID = Helpers.getBlockID(firstBlock);
         blocks[blockID] = firstBlock;
 
@@ -96,6 +96,18 @@ contract Blockprop is ERC721("Blockprop", "BP") {
             //converting to bytes using keccak is needed to compare strings in Solidity
             require(keccak256(bytes(owners[msg.sender].taxID)) == keccak256(bytes("0")), "Only the authority can registry owners.");
             owners[_etherID] = Owner(_name, _taxID, _etherID, false);
+    }
+
+    // Function to split up blocks
+    function splitBlock(uint _propertyID, uint _blockID) public {
+            //converting to bytes using keccak is needed to compare strings in Solidity
+            require(keccak256(bytes(owners[msg.sender].taxID)) == keccak256(bytes("0")), "Only the authority can registry owners.");
+            Block memory b = blocks[_blockID];
+            //assert(b.owner != address(0)); authority has id  0 
+            // If block size is 1, we have already reached the minimal division
+            assert(b.size > 1);
+            Block[4] memory newBlocks = Helpers.splitBlock(_propertyID, _blockID);
+
     }
 
 

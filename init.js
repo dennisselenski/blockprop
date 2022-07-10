@@ -32,6 +32,9 @@ module.exports = async function(callback) {
     console.log('User 1:', u1)
     console.log('User 2:', u2)
 
+    // // User 1 Deposits Ether
+    // await instance.makeOffer(0,999,{ from: account1 })
+    // console.log(`offered ${999} Ether from ${account1}`)
   }
   catch(error) {
     console.log(error)
