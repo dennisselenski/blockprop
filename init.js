@@ -25,8 +25,8 @@ module.exports = async function(callback) {
     const instance = await Blockprop.deployed()
     console.log('Blockprop fetched', instance.address)
 
-    instance.registerOwner("456def", account1, "Bob Dylan")
-    instance.registerOwner("123abc", account2, "John Doe")
+    await instance.registerOwner("456def", account1, "Bob Dylan")
+    await instance.registerOwner("123abc", account2, "John Doe")
     let u1 = await instance.owners(account1)
     let u2 = await instance.owners(account2)
     console.log('User 1:', u1)
