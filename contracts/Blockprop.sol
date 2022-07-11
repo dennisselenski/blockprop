@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8;
 pragma experimental ABIEncoderV2;
+import {Helpers} from "./Helpers.sol";
+import {Owner, Block, saleStatus} from "./Types.sol";
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
@@ -10,34 +12,13 @@ uint128 constant taxPercentage = 6;
 // and a symbol for our token
 contract Blockprop is ERC721("Blockprop", "BP") {
 
-
-    struct Owner {
-        string name;
-        string taxID;
-        address payable etherID;
-        bool authority;
-    }
-
-    // The 'x' and 'y' are coordinates for the bottom left corner of a block.
-    // Blocks are always squares and the edge length is given by 'size'
-    struct Block {
-        uint128 x;
-        uint128 y;
-        uint128 size;
-        address owner;
-        // The property ID is the hash over all accending blockIDs belonging to
-        // a property. TODO: write hash function
-        uint256 propertyID;
-        saleStatus status;
-        address requester; //address of somebody who wants to buy the block
-        uint256 offeredAmount;
-    }
-
     // Mapping to get the owner struct by it's etherID
     mapping(address => Owner) public owners; // formerly idToOwner
 
     // Mapping to get the block struct by it's unique 256 bit blockID
     mapping(uint256 => Block) public blocks; // fomerly idToBlock
+    // List containg all blockIDs to access them from the outside (e.g. to get the current status)
+    uint256[] public blocksList;
 
     // Mapping to get a list with all blocks belonging to a property indexed by
     // it's propertyID
@@ -47,8 +28,6 @@ contract Blockprop is ERC721("Blockprop", "BP") {
     mapping(address => uint256[]) public assets;
 
     address authority;
-
-    enum saleStatus {ForSale, NotForSale, Accepted}
 
     // We assume that only the authority deploys the smart contract and
     // calls the constructor. The authority owns everything at the beginning.
@@ -65,8 +44,9 @@ contract Blockprop is ERC721("Blockprop", "BP") {
         // Create the initial block, assign it to the authority and add it to
         // the blocks mapping
         Block memory firstBlock = Block(0, 0, maxSize(), payable(msg.sender), propertyID, saleStatus.NotForSale, address(0), 0);
-        uint256 blockID = getBlockID(firstBlock);
+        uint256 blockID = Helpers.getBlockID(firstBlock);
         blocks[blockID] = firstBlock;
+        blocksList.push(blockID);
 
         // Create a list with all blocks belonging to the property and add the
         // blocks
@@ -81,16 +61,14 @@ contract Blockprop is ERC721("Blockprop", "BP") {
         assets[msg.sender] = _propertyIDList;
     }
 
-    // Returns the maximum size a property object can have
-    function maxSize() public pure returns (uint128) {
-        return 2 ** 128 - 1;
+    // retuns the total number of blocks stored in blocksList
+    function getNumberOfBlocks() public view returns(uint256) {
+        return blocksList.length;
     }
 
-    // Create a unique blockID by writing x and y in one variable
-    function getBlockID(Block memory _block) public pure returns (uint256) {
-        uint256 id = _block.y >> 128;
-        id = id | _block.x;
-        return id;
+    // Returns the maximum size a property object can have
+    function maxSize() public pure returns (uint128) {
+        return type(uint128).max-1;// We do -1 because we want an even number for further division
     }
 
     // Extension of balanceOf returning the total size of the owner's property
@@ -122,7 +100,7 @@ contract Blockprop is ERC721("Blockprop", "BP") {
     }
 
     // Function for the land registry to registrate owners
-    function registrateOwner(string memory _taxID, address payable _etherID, string memory _name) private {
+    function registerOwner(string memory _taxID, address payable _etherID, string memory _name) public {
             //converting to bytes using keccak is needed to compare strings in Solidity
             require(keccak256(bytes(owners[msg.sender].taxID)) == keccak256(bytes("0")), "Only the authority can registry owners.");
             owners[_etherID] = Owner(_name, _taxID, _etherID, false);
