@@ -7,8 +7,6 @@ import {Owner, Block, saleStatus} from "./Types.sol";
 
 uint128 constant taxPercentage = 6;
 
-// Our contract inherits from ERC721. The ERC721 constructor expectes a name
-// and a symbol for our token
 contract Blockprop {
 
     address authority;
@@ -16,14 +14,16 @@ contract Blockprop {
     // Mapping to get the owner struct by it's etherID
     mapping(address => Owner) public owners;
 
-    // Mapping to get a list with all propertyIDs from an owner (indexed by the owners add)
+    // Mapping to get a list with all propertyIDs from an owner (indexed by the
+    // owners address)
     mapping(address => uint256[]) public assets;
     
-    // Mapping to get a list with all block ids belonging to a property indexed by
+    // Mapping to get a list with all blockIDs belonging to a property indexed by
     // it's propertyID
     mapping(uint256 => uint256[]) public properties;
 
-    // List containg all blockIDs to access them from the outside (e.g. to get the current status)
+    // List containg all blockIDs to access them from the outside (e.g. to get
+    // the current status)
     uint256[] public blocksList;
 
     // Mapping to get the block struct by it's unique 256 bit blockID
@@ -33,7 +33,7 @@ contract Blockprop {
     // calls the constructor. The authority owns everything at the beginning.
     // We also assume that the taxID of the authority is 0
     constructor() {
-        // We assume the propertyID of the very first property is just 0. TODO: change
+        // We assume the propertyID of the very first property is just 0
         uint256 propertyID = 0;
 
         // Create the authority and add it to the owners mapping. We assume the
@@ -43,22 +43,19 @@ contract Blockprop {
 
         // Create the initial block, assign it to the authority and add it to
         // the blocks mapping
-        Block memory firstBlock = Block(0, 0, maxSize(), payable(msg.sender), propertyID, saleStatus.NotForSale, address(0), 0);
+        Block memory firstBlock = Block(0, 0, maxSize(), payable(msg.sender), saleStatus.NotForSale, address(0), 0);
         uint256 blockID = Helpers.getBlockID(firstBlock);
         blocks[blockID] = firstBlock;
         blocksList.push(blockID);
 
         // Create a list with all blocks belonging to the property and add the
-        // blocks
-        Block[] storage _blockArray = properties[propertyID];//todo jonas p change constructor
-        _blockArray.push(firstBlock);
-        properties[propertyID] = _blockArray;
+        uint256[] storage blockArray = properties[propertyID];
+        blockArray.push(blockID);
 
         // Create an asset list, add the first asset and add the list to the
         // assets maping
-        uint256[] storage _propertyIDList = assets[msg.sender];
-        _propertyIDList.push(propertyID);
-        assets[msg.sender] = _propertyIDList;
+        uint256[] storage propertyIDList = assets[msg.sender];
+        propertyIDList.push(propertyID);
     }
 
     // retuns the total number of blocks stored in blocksList
@@ -77,9 +74,10 @@ contract Blockprop {
         uint256[] memory propertyIDlist = assets[_owner];
         for(uint i = 0; i < propertyIDlist.length; i++) {
             uint256 propertyID = propertyIDlist[i];
-            Block[] memory blockList = properties[propertyID];//todo fix error
-            for(uint j = 0; j < blockList.length; j++) {
-                Block memory b = blockList[j];
+            uint256[] memory blockIDList = properties[propertyID];
+            for(uint j = 0; j < blockIDList.length; j++) {
+                uint256 blockID = blockIDList[j];
+                Block memory b = blocks[blockID];
                 totalArea += b.size ** 2;
             }
         }

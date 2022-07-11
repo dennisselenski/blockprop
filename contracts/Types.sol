@@ -15,12 +15,9 @@ struct Block {
     uint128 y;
     uint128 size;
     address owner;
-    // The property ID is the hash over all accending blockIDs belonging to
-    // a property. TODO: write hash function
-    uint256 propertyID;//TODO delete
     saleStatus status;
     address requester; //address of somebody who wants to buy the block
     uint256 offeredAmount;
 }
-enum saleStatus {ForSale, NotForSale, Accepted}
-    
+
+enum saleStatus { ForSale, NotForSale, Accepted }
