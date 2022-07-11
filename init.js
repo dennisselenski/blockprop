@@ -1,14 +1,5 @@
 // Contracts
 const Blockprop = artifacts.require("Blockprop");
-blockList = []
-ownerList = []
-ownerAdressList = []
-// Utils
-// const ether = (n) => {
-//   return new web3.utils.BN(
-//     web3.utils.toWei(n.toString(), 'ether')
-//   )
-// }
 
 module.exports = async function(callback) {
   try {
@@ -35,57 +26,62 @@ module.exports = async function(callback) {
     console.log('User 2:', u2)
     //todo call makeoffer from other addresses
 
-
+    await print(instance);
     let blockID0 = await instance.blocksList(0);
-    console.log("id of block 0", BigInt(blockID0));
     console.log("split first block");
     await instance.splitBlock(blockID0);
-
-
-    let blockID1 = await instance.blocksList(1);
-    console.log("id of block 1", BigInt(blockID1));
-    
-    blockCount = await instance.getNumberOfBlocks()
-
-        for (i = 0; i < blockCount; i++) {
-            blockId = await instance.blocksList(i)
-            blockId = Number(blockId)
-
-            block = await instance.blocks(BigInt(blockId))
-
-            var blockObj = new Object()
-            blockObj.x = BigInt(block.x)
-            blockObj.y = BigInt(block.y)
-            blockObj.size = BigInt(block.size)
-            blockObj.owner = block.owner
-            blockObj.propertyID = BigInt(block.propertyID)
-            blockObj.requester = block.requester
-            blockObj.offeredAmount = BigInt(block.offeredAmount)
-            blockList.push(blockObj)
-
-            if (!ownerAdressList.includes(blockObj.owner)) {
-                ownerAdressList.push(blockObj.owner)
-
-                owner = await instance.owners(blockObj.owner)
-
-                var ownerObj = new Object()
-                ownerObj.name = owner.name
-                ownerObj.taxID = owner.taxID
-                ownerObj.etherID = owner.etherID
-                ownerObj.authority = owner.authority
-                ownerList.push(ownerObj)
-            }
-        }
+    await print(instance);
   }
   catch(error) {
     console.log(error)
   }
+  callback()
+}
+
+async function print(instance)
+{
+  console.log("▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀")
+  console.log("current state of the blocks:")
+  blockList = []
+  ownerList = []
+  ownerAdressList = []
   
+  blockCount = await instance.getNumberOfBlocks()
+
+  for (i = 0; i < blockCount; i++) {
+      blockId = await instance.blocksList(i)
+      blockId = Number(blockId)
+
+      block = await instance.blocks(BigInt(blockId))
+
+      var blockObj = new Object()
+      blockObj.id = BigInt(blockId)
+      blockObj.x = BigInt(block.x)
+      blockObj.y = BigInt(block.y)
+      blockObj.size = BigInt(block.size)
+      blockObj.owner = block.owner
+      blockObj.propertyID = BigInt(block.propertyID)
+      blockObj.requester = block.requester
+      blockObj.offeredAmount = BigInt(block.offeredAmount)
+      blockList.push(blockObj)
+
+      if (!ownerAdressList.includes(blockObj.owner)) {
+          ownerAdressList.push(blockObj.owner)
+
+          owner = await instance.owners(blockObj.owner)
+
+          var ownerObj = new Object()
+          ownerObj.name = owner.name
+          ownerObj.taxID = owner.taxID
+          ownerObj.etherID = owner.etherID
+          ownerObj.authority = owner.authority
+          ownerList.push(ownerObj)
+      }
+  }
+
   var status = new Object()
   status.blockList = blockList
   status.ownerList = ownerList
   
   console.log(status)
-  callback()
 }
-
