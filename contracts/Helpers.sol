@@ -11,7 +11,8 @@ library Helpers {
     }
 
     function getBlockID(uint128 x, uint128 y) public pure returns (uint256) {
-        uint256 id = x | y;
+        uint256 id = uint256(y) << 128;
+        id = uint256(x) | id;
         return id;
     }
 
