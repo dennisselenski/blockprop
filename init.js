@@ -7,30 +7,32 @@ module.exports = async function(callback) {
     const accounts = await web3.eth.getAccounts()
     console.log(accounts)
 
+    // Fetch the deployed exchange
+    const instance = await Blockprop.deployed()
+    console.log('Blockprop fetched', instance.address)
+
     // Set up users, account 0 = authority
     const authority = accounts[0]
     const account1 = accounts[1]
     const account2 = accounts[2]
 
-    console.log('Account 1', account1) 
-    console.log('Account 2', account2) 
-    // Fetch the deployed exchange
-    const instance = await Blockprop.deployed()
-    console.log('Blockprop fetched', instance.address)
-
-    await instance.registerOwner("456def", account1, "Bob Dylan")
-    await instance.registerOwner("123abc", account2, "John Doe")
+    await instance.registerOwner("456def", account1, "Satoshi Nakamoto")
+    await instance.registerOwner("123abc", account2, "Vitalik Buterin")
     let u1 = await instance.owners(account1)
     let u2 = await instance.owners(account2)
     console.log('User 1:', u1)
     console.log('User 2:', u2)
-    //todo call makeoffer from other addresses
 
-    await print(instance);
+    // await printBlocks(instance);
     let blockID0 = await instance.blocksList(0);
     console.log("split first block");
     await instance.splitBlock(blockID0);
-    await print(instance);
+    // await printBlocks(instance);
+
+    await splitAndPrint(authority, instance, true)
+    await splitAndPrint(authority, instance, false)
+        //todo call makeoffer from other addresses
+
   }
   catch(error) {
     console.log(error)
@@ -38,7 +40,21 @@ module.exports = async function(callback) {
   callback()
 }
 
-async function print(instance)
+async function splitAndPrint(authority, instance, isToSplit)
+{
+  let propertyIDs = await instance.getPropertyIDs(authority)
+  let propertyToSplit = propertyIDs[0]
+  console.log(propertyToSplit.toString())
+  let blockIDs = await instance.getBlockIDs(propertyToSplit.toString())
+  console.log(blockIDs)
+  let bb0 = blockIDs[0].toString()
+  console.log(bb0)
+
+  let blocksOfNewProperty = [bb0]
+  if(isToSplit)
+    await instance.splitProperty(propertyToSplit, blocksOfNewProperty)
+}
+async function printBlocks(instance)
 {
   console.log("▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀")
   console.log("current state of the blocks:")
@@ -50,8 +66,6 @@ async function print(instance)
 
   for (i = 0; i < blockCount; i++) {
       blockId = await instance.blocksList(i)
-      blockId = Number(blockId)
-
       block = await instance.blocks(BigInt(blockId))
 
       var blockObj = new Object()

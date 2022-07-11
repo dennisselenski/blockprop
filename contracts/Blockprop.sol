@@ -67,6 +67,12 @@ contract Blockprop {
         return type(uint128).max-1;// We do -1 because we want an even number for further division
     }
 
+    function getPropertyIDs(address owner) public view returns (uint256[] memory) {
+        return assets[owner];
+    }
+    function getBlockIDs(uint propertyID) public view returns (uint256[] memory) {
+        return properties[propertyID];
+    }
     // split newPropertyBlocks (a list of blocks) from the property with the given propertyID 
     // (referred to as 'original property') and create a new property
     function splitProperty(uint256 propertyID, uint256[] memory newPropertyBlocks) public {
