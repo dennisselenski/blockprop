@@ -90,9 +90,8 @@ contract Blockprop {
             // if this is supposed to be added to the new property
             if (Helpers.existsInArray(origProperty[i], newPropertyBlocks)) {
                 // set propertyID to new value
-                Block memory _block = blocks[origProperty[i]];
+                Block storage _block = blocks[origProperty[i]];
                 _block.propertyID = newPropertyID;
-                blocks[origProperty[i]] = _block;
             }
             else {
                 // add blockID to list of remaining original property
