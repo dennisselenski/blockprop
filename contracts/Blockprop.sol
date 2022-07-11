@@ -170,51 +170,84 @@ contract Blockprop {
             owners[_etherID] = Owner(_name, _taxID, _etherID, false);
     }
 
-    // Function for somebody who wants to make an offer for a block
-    function makeOffer(uint256 _propertyID, uint256 _offeredAmount) public {       
-        require(msg.sender != blocks[_propertyID].owner, "This is your property already.");
-        require(blocks[_propertyID].status == saleStatus.ForSale, "This property is not up for sale right now.");
-        blocks[_propertyID].requester = msg.sender;
-        blocks[_propertyID].offeredAmount = _offeredAmount;
-        //todo: trade properties only
+   
+    // Function for somebody who wants to make an offer for a property
+    function makeOffer(uint256 _propertyID, uint256 _offeredAmount) public { 
+        //List of BlockIDs belonging to the propertyID
+        uint256[] memory blockIDList = properties[_propertyID];
+
+        require(msg.sender != blocks[blockIDList[0]].owner, "This is your property already.");
+        require(blocks[blockIDList[0]].status == saleStatus.ForSale, "This property is not up for sale right now.");
+
+        //change values in all belonging blocks 
+        for(uint i = 0; i < blockIDList.length; i++) {
+                 blocks[blockIDList[i]].requester = msg.sender;
+                 blocks[blockIDList[i]].offeredAmount = _offeredAmount;
+        }
     }
 
     //Function to decline a received offer
     function declineOffer(uint256 _propertyID) public {
-        require(msg.sender == blocks[_propertyID].owner, "You have to be the owner of the property.");
-        require(blocks[_propertyID].requester != address(0), "There is no offer for this property.");
-        blocks[_propertyID].status = saleStatus.ForSale;
-        blocks[_propertyID].requester = address(0);
-        blocks[_propertyID].offeredAmount = 0;
+        //List of BlockIDs belonging to the propertyID
+        uint256[] memory blockIDList = properties[_propertyID];
+
+        require(msg.sender == blocks[blockIDList[0]].owner, "You have to be the owner of the property.");
+        require(blocks[blockIDList[0]].requester != address(0), "There is no offer for this property");
+
+        //change values in all belonging blocks
+        for(uint i = 0; i < blockIDList.length; i++) {                
+                blocks[blockIDList[i]].status = saleStatus.ForSale;
+                blocks[blockIDList[i]].requester = address(0);
+                blocks[blockIDList[i]].offeredAmount = 0;
+        }
     }
 
     // Function to accept a received offer
     function acceptOffer(uint256 _propertyID) public {
-        require(msg.sender == blocks[_propertyID].owner, "You have to be the owner of the property.");
-        require(blocks[_propertyID].requester != address(0), "There is no offer for this property.");      
-        blocks[_propertyID].status = saleStatus.Accepted;       
+        //List of BlockIDs belonging to the propertyID
+        uint256[] memory blockIDList = properties[_propertyID];
+
+        require(msg.sender == blocks[blockIDList[0]].owner, "You have to be the owner of the property.");
+        require(blocks[blockIDList[0]].requester != address(0), "There is no offer for this property");
+
+        //change status in all blocks of this property
+        for(uint i = 0; i < blockIDList.length; i++) {
+                blocks[blockIDList[i]].status = saleStatus.Accepted;
+        }    
     }
 
-    //Function to transferMoney
+    //Function to transfer money
     function transferMoney(uint256 _propertyID) public payable {
-        require(blocks[_propertyID].status == saleStatus.Accepted, "The offer was not accepted yet.");
-        require(msg.sender == blocks[_propertyID].requester, "You put no offer for this property.");
+        //List of BlockIDs belonging to the propertyID
+        uint256[] memory blockIDList = properties[_propertyID];
+
+        require(blocks[blockIDList[0]].status == saleStatus.Accepted, "The offer was not accepted yet.");
+        require(msg.sender == blocks[blockIDList[0]].requester, "You put no offer for this property.");
+
         //send constant taxPercentage(beginning of code) to the autority address
-        owners[authority].etherID.transfer((blocks[_propertyID].offeredAmount/100*taxPercentage));
+        owners[authority].etherID.transfer((blocks[blockIDList[0]].offeredAmount/100*taxPercentage));
         //send offeredAmount to previous owner
-        owners[blocks[_propertyID].owner].etherID.transfer(blocks[_propertyID].offeredAmount);
-        //set requester as new owner
-        blocks[_propertyID].owner = blocks[_propertyID].requester;
-        //reset other values
-        blocks[_propertyID].status = saleStatus.NotForSale;
-        blocks[_propertyID].requester = address(0);
-        blocks[_propertyID].offeredAmount = 0;
+        owners[blocks[blockIDList[0]].owner].etherID.transfer(blocks[blockIDList[0]].offeredAmount);
+
+        //change values in all belonging blocks
+        for(uint i = 0; i < blockIDList.length; i++) {
+                blocks[blockIDList[i]].owner = msg.sender;
+                blocks[blockIDList[i]].status = saleStatus.NotForSale;
+                blocks[blockIDList[i]].requester = address(0);
+                blocks[blockIDList[i]].offeredAmount = 0;               
+        }    
     }
 
-    // Function to change wether your block is for sale or not
-    function changeStatus(uint256 _propertyID, saleStatus _status) public {      
-        // only callable by the owner of the block
-        require(msg.sender == blocks[_propertyID].owner, "You have to be the owner of the property.");
-        blocks[_propertyID].status = _status;
+    // Function to change wether your property is for sale or not
+    function changeStatus(uint256 _propertyID, saleStatus _status) public { 
+        //List of BlockIDs belonging to the propertyID
+        uint256[] memory blockIDList = properties[_propertyID];
+
+        require(msg.sender == blocks[blockIDList[0]].owner, "You have to be the owner of the property.");
+
+        //change the status in all belonging blocks
+        for(uint i = 0; i < blockIDList.length; i++) {
+                blocks[blockIDList[i]].status = _status;             
+        }  
     }
 }
