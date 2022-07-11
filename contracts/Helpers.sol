@@ -7,15 +7,11 @@ library Helpers {
 
     // Create a unique blockID by writing x and y in one variable
     function getBlockID(Block memory _block) public pure returns (uint256) {
-        // solidity shift apparently doesn't work
-        uint256 id = _block.y * 2**128;
-        id = id | _block.x;
-        return id;
+        return getBlockID(_block.x, _block.y);
     }
 
     function getBlockID(uint128 x, uint128 y) public pure returns (uint256) {
-        uint256 id = y * 2**128;
-        id = id | x;
+        uint256 id = x | y;
         return id;
     }
 

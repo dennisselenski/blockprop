@@ -36,14 +36,22 @@ module.exports = async function(callback) {
     //todo call makeoffer from other addresses
 
 
+    let blockID0 = await instance.blocksList(0);
+    console.log("id of block 0", BigInt(blockID0));
+    console.log("split first block");
+    await instance.splitBlock(blockID0);
+
+
+    let blockID1 = await instance.blocksList(1);
+    console.log("id of block 1", BigInt(blockID1));
     
-    blockCount = await instance.getNumberOfBlocks.call()
+    blockCount = await instance.getNumberOfBlocks()
 
         for (i = 0; i < blockCount; i++) {
-            blockId = await instance.blocksList.call(i)
+            blockId = await instance.blocksList(i)
             blockId = Number(blockId)
 
-            block = await instance.blocks.call(blockId)
+            block = await instance.blocks(BigInt(blockId))
 
             var blockObj = new Object()
             blockObj.x = BigInt(block.x)
@@ -58,7 +66,7 @@ module.exports = async function(callback) {
             if (!ownerAdressList.includes(blockObj.owner)) {
                 ownerAdressList.push(blockObj.owner)
 
-                owner = await instance.owners.call(blockObj.owner)
+                owner = await instance.owners(blockObj.owner)
 
                 var ownerObj = new Object()
                 ownerObj.name = owner.name
@@ -80,3 +88,4 @@ module.exports = async function(callback) {
   console.log(status)
   callback()
 }
+
