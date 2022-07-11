@@ -168,11 +168,9 @@ contract Blockprop {
 
     // Function for the land registry to registrate owners
     function registerOwner(string memory _taxID, address payable _etherID, string memory _name) public {
-            //converting to bytes using keccak is needed to compare strings in Solidity
-            require(keccak256(bytes(owners[msg.sender].taxID)) == keccak256(bytes("0")), "Only the authority can registry owners.");
+            require(owners[msg.sender].authority, "Only the authority can registry owners.");
             owners[_etherID] = Owner(_name, _taxID, _etherID, false);
     }
-
 
     // Function for somebody who wants to make an offer for a block
     function makeOffer(uint256 _propertyID, uint256 _offeredAmount) public {       
