@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8;
 
-import { Owner, Block, saleStatus } from "./Types.sol";
+import { Owner, Block } from "./Types.sol";
+import { Blockprop } from "./Blockprop.sol";
 
 library Helpers {
 

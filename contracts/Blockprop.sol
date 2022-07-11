@@ -2,12 +2,13 @@
 pragma solidity ^0.8;
 pragma experimental ABIEncoderV2;
 import { Helpers } from "./Helpers.sol";
-import { Owner, Block, saleStatus } from "./Types.sol";
-
+import { Owner, Block } from "./Types.sol";
 
 uint128 constant taxPercentage = 6;
 
-contract Blockprop {
+contract Blockprop {    
+
+    enum saleStatus { ForSale, NotForSale, Accepted }
 
     address authority;
 
