@@ -67,6 +67,50 @@ contract Blockprop {
         return type(uint128).max-1;// We do -1 because we want an even number for further division
     }
 
+    // split newPropertyBlocks (a list of blocks) from the property with the given propertyID 
+    // (referred to as 'original property') and create a new property
+    function splitProperty(uint256 propertyID, uint256[] memory newPropertyBlocks) public {
+        // check if the caller owns the given property
+        uint256[] memory senderAssets = assets[msg.sender];
+        require(Helpers.existsInArray(propertyID, senderAssets), "You do not own this property");
+
+        // check if all blocks in newPropertyBlocks are part of the property beloning to the given propertyID
+        uint256[] memory origProperty = properties[propertyID];
+        for (uint i = 0; i < newPropertyBlocks.length; i++) {
+            require(Helpers.existsInArray(newPropertyBlocks[i], origProperty), 
+            "At least one block is not part of the given property");
+        }
+        
+        // run through original property and change propertyID on all relevant blocks
+        // also create a new list for the remains of the original property 
+        uint256 newPropertyID = Helpers.getNewPropertyID(propertyID);
+        uint256[] memory origPropertyAfterSplit = new uint256[](origProperty.length - newPropertyBlocks.length);
+        uint j = 0;
+        for (uint i = 0; i < origProperty.length; i++) {
+            // if this is supposed to be added to the new property
+            if (Helpers.existsInArray(origProperty[i], newPropertyBlocks)) {
+                // set propertyID to new value
+                Block memory _block = blocks[origProperty[i]];
+                _block.propertyID = newPropertyID;
+                blocks[origProperty[i]] = _block;
+            }
+            else {
+                // add blockID to list of remaining original property
+                origPropertyAfterSplit[j] = (origProperty[i]);
+                j++;
+            }
+        }
+
+        // update properties mapping
+        properties[newPropertyID] = newPropertyBlocks;
+        properties[propertyID] = origPropertyAfterSplit;
+
+        // update assets mapping
+        uint256[] storage assetsList = assets[msg.sender];
+        assetsList.push(newPropertyID);
+        assets[msg.sender] = assetsList;
+    }
+
     // Extension of balanceOf returning the total size of the owner's property
     function areaBalanceOf(address _owner) external view returns (uint256) {
         uint256 totalArea = 0;

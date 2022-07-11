@@ -116,7 +116,17 @@ library Helpers {
     // created collision as soon as we request two propertyIDs during one block
     // lifetime. Thats the reason why we also use the old propertyID in order
     // to calculate the new one
-    function getNewPropertyID(uint oldPropertyID) private view returns (uint) {
+    function getNewPropertyID(uint oldPropertyID) public view returns (uint) {
         return uint(keccak256(abi.encodePacked(getRandomness(), oldPropertyID)));
+    }
+
+    // check wether value is in array and return the index of value if it is in array
+    function existsInArray(uint value, uint[] memory array) public pure returns (bool) {
+        for (uint i = 0; i < array.length; i++) {
+            if (array[i] == value) {
+                return true;
+            }
+        }
+        return false;
     }
 }
