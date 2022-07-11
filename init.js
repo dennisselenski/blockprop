@@ -26,8 +26,11 @@ module.exports = async function(callback) {
 
     await splitAndPrint(authority, instance)
 
-    await printBlocks(instance)
-        //todo call makeoffer from other addresses
+    let propertyIDs = await instance.getPropertyIDs(authority)
+    let propertyToSell = BigInt(propertyIDs[1])
+    await saleProcess(instance, account1, authority, propertyToSell, 10)
+
+    await printBlocks(instance)   
 
   }
   catch(error) {
@@ -96,4 +99,8 @@ async function printBlocks(instance)
   status.ownerList = ownerList
   
   console.log(status)
+}
+async function saleProcess(instance, buyerAdr, sellerAdr, propertyToSell, amount) {
+  await instance.changeStatus(propertyToSell, Blockprop.saleStatus.ForSale, {from: sellerAdr})
+  await instance.makeOffer(propertyToSell, amount, {from: buyerAdr})
 }
