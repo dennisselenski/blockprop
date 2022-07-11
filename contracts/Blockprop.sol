@@ -107,7 +107,6 @@ contract Blockprop {
         // update assets mapping
         uint256[] storage assetsList = assets[msg.sender];
         assetsList.push(newPropertyID);
-        assets[msg.sender] = assetsList;
     }
 
     // Extension of balanceOf returning the total size of the owner's property
