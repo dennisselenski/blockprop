@@ -151,7 +151,7 @@ contract Blockprop {
         blocks[b3ID] = b3;
         blocks[b4ID] = b4;
         blocksList.push(b2ID);
-        blocksList.push(b2ID);
+        blocksList.push(b3ID);
         blocksList.push(b4ID);
 
         // Add the blockIDs to the properties mapping
