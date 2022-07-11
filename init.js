@@ -5,11 +5,9 @@ module.exports = async function(callback) {
   try {
     // Fetch accounts from wallet - these are unlocked
     const accounts = await web3.eth.getAccounts()
-    console.log(accounts)
 
     // Fetch the deployed exchange
     const instance = await Blockprop.deployed()
-    console.log('Blockprop fetched', instance.address)
 
     // Set up users, account 0 = authority
     const authority = accounts[0]
@@ -20,17 +18,15 @@ module.exports = async function(callback) {
     await instance.registerOwner("123abc", account2, "Vitalik Buterin")
     let u1 = await instance.owners(account1)
     let u2 = await instance.owners(account2)
-    console.log('User 1:', u1)
-    console.log('User 2:', u2)
 
     // await printBlocks(instance);
     let blockID0 = await instance.blocksList(0);
     console.log("split first block");
     await instance.splitBlock(blockID0);
-    // await printBlocks(instance);
 
-    await splitAndPrint(authority, instance, true)
-    await splitAndPrint(authority, instance, false)
+    await splitAndPrint(authority, instance)
+
+    await printBlocks(instance)
         //todo call makeoffer from other addresses
 
   }
@@ -40,19 +36,21 @@ module.exports = async function(callback) {
   callback()
 }
 
-async function splitAndPrint(authority, instance, isToSplit)
+// takes the first property of authority and splits two blocks off of it
+async function splitAndPrint(authority, instance)
 {
   let propertyIDs = await instance.getPropertyIDs(authority)
   let propertyToSplit = propertyIDs[0]
-  console.log(propertyToSplit.toString())
-  let blockIDs = await instance.getBlockIDs(propertyToSplit.toString())
-  console.log(blockIDs)
-  let bb0 = blockIDs[0].toString()
-  console.log(bb0)
+  let blockIDs = await instance.getBlockIDs(BigInt(propertyToSplit))
+  // save blockIDs as BigInts
+  blockNums = []
+  blockIDs.forEach(element => {
+    blockNums.push(BigInt(element))
+  });
+  // only take the first 2
+  blockNums = blockNums.slice(0,2)
 
-  let blocksOfNewProperty = [bb0]
-  if(isToSplit)
-    await instance.splitProperty(propertyToSplit, blocksOfNewProperty)
+  await instance.splitProperty(propertyToSplit, blockNums)
 }
 async function printBlocks(instance)
 {
