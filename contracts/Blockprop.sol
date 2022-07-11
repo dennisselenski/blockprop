@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8;
 pragma experimental ABIEncoderV2;
-import {Helpers} from "./Helpers.sol";
-import {Owner, Block, saleStatus} from "./Types.sol";
+import { Helpers } from "./Helpers.sol";
+import { Owner, Block, saleStatus } from "./Types.sol";
 
 
 uint128 constant taxPercentage = 6;
@@ -43,12 +43,11 @@ contract Blockprop {
 
         // Create the initial block, assign it to the authority and add it to
         // the blocks mapping
-        Block memory firstBlock = Block(0, 0, maxSize(), payable(msg.sender), saleStatus.NotForSale, address(0), 0);
-        uint256 blockID = Helpers.getBlockID(firstBlock);
-        blocks[blockID] = firstBlock;
+        uint256 blockID = Helpers.getBlockID(0, 0);
+        blocks[blockID] = Block(0, 0, maxSize(), payable(msg.sender), propertyID, saleStatus.NotForSale, address(0), 0);
         blocksList.push(blockID);
 
-        // Create a list with all blocks belonging to the property and add the
+        // Add the blockID to the property
         uint256[] storage blockArray = properties[propertyID];
         blockArray.push(blockID);
 
@@ -82,6 +81,45 @@ contract Blockprop {
             }
         }
         return totalArea;
+    }
+
+    function splitBlock(uint _blockID) public returns (uint[4] memory) {
+        // Get the block struct from our contract
+        Block storage b = blocks[_blockID];
+
+        // If this block does not exists, throw an error
+        assert(b.owner != address(0));
+
+        // If block size is 1, we have already reached the minimal division
+        assert(b.size > 1);
+
+        // Divide the size by two, the point (x,y) stays the same
+        b.size = b.size / 2;
+
+        // Create the 3 new blocks and their blockIDs
+        Block memory b2 = Block(b.x + b.size, b.y, b.size, b.owner, b.propertyID, saleStatus.NotForSale, address(0), 0);
+        Block memory b3 = Block(b.x, b.y + b.size, b.size, b.owner, b.propertyID, saleStatus.NotForSale, address(0), 0);
+        Block memory b4 = Block(b.x + b.size, b.y + b.size, b.size, b.owner, b.propertyID, saleStatus.NotForSale, address(0), 0);
+        uint b2ID = Helpers.getBlockID(b2);
+        uint b3ID = Helpers.getBlockID(b3);
+        uint b4ID = Helpers.getBlockID(b4);
+
+        // Add them to the blocks mapping and to blockList
+        blocks[b2ID] = b2;
+        blocks[b3ID] = b3;
+        blocks[b4ID] = b4;
+        blocksList.push(b2ID);
+        blocksList.push(b2ID);
+        blocksList.push(b4ID);
+
+        // Add the blockIDs to the properties mapping
+        uint[] storage property = properties[b.propertyID];
+        assert(property.length != 0);
+        property.push(b2ID);
+        property.push(b3ID);
+        property.push(b4ID);
+
+        return [ _blockID, b2ID, b3ID, b4ID ];
     }
 
     // Function for the land registry to registrate owners

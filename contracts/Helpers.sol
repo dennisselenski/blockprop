@@ -99,6 +99,12 @@ library Helpers {
         return id;
     }
 
+    function getBlockID(uint128 x, uint128 y) public pure returns (uint256) {
+        uint256 id = y * 2**128;
+        id = id | x;
+        return id;
+    }
+
     // Get pseudo random value by hashing the current's block difficulty and
     // timestamp
     function getRandomness() private view returns (uint) {
