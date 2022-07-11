@@ -103,4 +103,6 @@ async function printBlocks(instance)
 async function saleProcess(instance, buyerAdr, sellerAdr, propertyToSell, amount) {
   await instance.changeStatus(propertyToSell, Blockprop.saleStatus.ForSale, {from: sellerAdr})
   await instance.makeOffer(propertyToSell, amount, {from: buyerAdr})
+  await instance.acceptOffer(propertyToSell, {from: sellerAdr})
+  await instance.transferMoney(propertyToSell, {from: buyerAdr})
 }
