@@ -5,6 +5,7 @@ ownerAdressList = []
 
 module.exports = async function(callback) {
     try {
+        //todo kill 
         const instance = await Blockprop.deployed()
         blockCount = await instance.getNumberOfBlocks.call()
 

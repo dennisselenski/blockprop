@@ -4,30 +4,30 @@ pragma experimental ABIEncoderV2;
 import {Helpers} from "./Helpers.sol";
 import {Owner, Block, saleStatus} from "./Types.sol";
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 uint128 constant taxPercentage = 6;
 
 // Our contract inherits from ERC721. The ERC721 constructor expectes a name
 // and a symbol for our token
-contract Blockprop is ERC721("Blockprop", "BP") {
+contract Blockprop {
+
+    address authority;
 
     // Mapping to get the owner struct by it's etherID
-    mapping(address => Owner) public owners; // formerly idToOwner
-
-    // Mapping to get the block struct by it's unique 256 bit blockID
-    mapping(uint256 => Block) public blocks; // fomerly idToBlock
-    // List containg all blockIDs to access them from the outside (e.g. to get the current status)
-    uint256[] public blocksList;
-
-    // Mapping to get a list with all blocks belonging to a property indexed by
-    // it's propertyID
-    mapping(uint256 => Block[]) public properties;
+    mapping(address => Owner) public owners;
 
     // Mapping to get a list with all propertyIDs from an owner (indexed by the owners add)
     mapping(address => uint256[]) public assets;
+    
+    // Mapping to get a list with all block ids belonging to a property indexed by
+    // it's propertyID
+    mapping(uint256 => uint256[]) public properties;
 
-    address authority;
+    // List containg all blockIDs to access them from the outside (e.g. to get the current status)
+    uint256[] public blocksList;
+
+    // Mapping to get the block struct by it's unique 256 bit blockID
+    mapping(uint256 => Block) public blocks; 
 
     // We assume that only the authority deploys the smart contract and
     // calls the constructor. The authority owns everything at the beginning.
@@ -50,7 +50,7 @@ contract Blockprop is ERC721("Blockprop", "BP") {
 
         // Create a list with all blocks belonging to the property and add the
         // blocks
-        Block[] storage _blockArray = properties[propertyID];
+        Block[] storage _blockArray = properties[propertyID];//todo jonas p change constructor
         _blockArray.push(firstBlock);
         properties[propertyID] = _blockArray;
 
@@ -77,26 +77,13 @@ contract Blockprop is ERC721("Blockprop", "BP") {
         uint256[] memory propertyIDlist = assets[_owner];
         for(uint i = 0; i < propertyIDlist.length; i++) {
             uint256 propertyID = propertyIDlist[i];
-            Block[] memory blockList = properties[propertyID];
+            Block[] memory blockList = properties[propertyID];//todo fix error
             for(uint j = 0; j < blockList.length; j++) {
                 Block memory b = blockList[j];
                 totalArea += b.size ** 2;
             }
         }
         return totalArea;
-    }
-
-    // ERC721 functions
-
-    // Number of tokens for given owner
-    function balanceOf(address _owner) public override view returns (uint256) {
-        uint256[] memory list = assets[_owner];
-        return list.length;
-    }
-
-    // Owner of block
-    function ownerOf(uint256 _tokenID) public override view returns (address) {
-        return blocks[_tokenID].owner;
     }
 
     // Function for the land registry to registrate owners
@@ -113,6 +100,7 @@ contract Blockprop is ERC721("Blockprop", "BP") {
         require(blocks[_propertyID].status == saleStatus.ForSale, "This property is not up for sale right now.");
         blocks[_propertyID].requester = msg.sender;
         blocks[_propertyID].offeredAmount = _offeredAmount;
+        //todo: trade properties only
     }
 
     //Function to decline a received offer
@@ -153,5 +141,4 @@ contract Blockprop is ERC721("Blockprop", "BP") {
         require(msg.sender == blocks[_propertyID].owner, "You have to be the owner of the property.");
         blocks[_propertyID].status = _status;
     }
-
 }

@@ -4,6 +4,20 @@ import {Owner, Block, saleStatus} from "./Types.sol";
 
 library Helpers {
 
+//TODO: Implement
+// function splitProperty()
+// {
+// this should re-assign blocks from the current property to new properties
+// pass in old property and block ids that should be in a new property
+// }
+
+//TODO: implement
+// function getNewPropertyID()
+// {
+// get rand / hash blockchain
+// }
+
+//todo: refactor, move to main contract to save parameters
 function splitBlock(uint _blockID, mapping(uint256 => Block) storage blocks, mapping(uint256 => Block[]) storage properties,     mapping(address => uint256[]) storage assets, uint256[] storage blocksList) public returns (uint[4] memory) {
         // Get the block struct from our contract
         Block storage b = blocks[_blockID];

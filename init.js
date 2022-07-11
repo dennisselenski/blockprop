@@ -31,7 +31,7 @@ module.exports = async function(callback) {
     let u2 = await instance.owners(account2)
     console.log('User 1:', u1)
     console.log('User 2:', u2)
-
+    //todo call makeoffer from other addresses
   }
   catch(error) {
     console.log(error)
