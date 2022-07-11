@@ -48,7 +48,6 @@ module.exports = {
     },
     //
     // An additional network, but with some advanced options…
-    //todo Leo increase gas
     // advanced: {
     //   port: 8777,             // Custom port
     //   network_id: 1342,       // Custom network
