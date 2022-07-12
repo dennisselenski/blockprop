@@ -235,8 +235,9 @@ contract Blockprop {
         //send constant taxPercentage(beginning of code) to the autority address
         uint taxAmount = (blocks[blockIDList[0]].offeredAmount/100)*taxPercentage;
         payable(authority).transfer(taxAmount);
-        // send offeredAmount to previous owner
-        owners[blocks[blockIDList[0]].owner].etherID.transfer(blocks[blockIDList[0]].offeredAmount - taxAmount);
+        // send offeredAmount to seller
+        address seller = blocks[blockIDList[0]].owner;
+        payable(seller).transfer(blocks[blockIDList[0]].offeredAmount - taxAmount);
 
         //change values in all belonging blocks
         for(uint i = 0; i < blockIDList.length; i++) {
@@ -245,7 +246,23 @@ contract Blockprop {
             _block.status = saleStatus.NotForSale;
             _block.requester = address(0);
             _block.offeredAmount = 0;               
-        }    
+        }
+
+        // Add the property to the assets of the buyer
+        uint[] storage buyerAssets = assets[msg.sender];
+        buyerAssets.push(_propertyID);
+
+        // Remove the property of the assets of the seller
+        uint[] storage sellerAssets = assets[seller];
+        uint[] memory newSellerAssets = new uint[](sellerAssets.length - 1);
+        uint j = 0;
+        for(uint i = 0; i < sellerAssets.length; i++) {
+            if(sellerAssets[i] != _propertyID) {
+                newSellerAssets[j] = _propertyID;
+                j++;
+            }
+        }
+        assets[seller] = newSellerAssets;
     }
 
     receive() external payable {
