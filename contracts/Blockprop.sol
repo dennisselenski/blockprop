@@ -265,6 +265,36 @@ contract Blockprop {
         assets[seller] = newSellerAssets;
     }
 
+    function transferProperty(uint256 _propertyID, address _newOwner) public {
+        //List of BlockIDs belonging to the propertyID
+        uint256[] memory blockIDList = properties[_propertyID];
+
+        require(msg.sender == authority, "Only the authority can transfer property.");
+        require(msg.sender == blocks[blockIDList[0]].owner, "You have to be the owner of the property.");
+
+        //change values in all belonging blocks
+        for(uint i = 0; i < blockIDList.length; i++) {
+            Block storage _block = blocks[blockIDList[i]];
+            _block.owner = _newOwner;             
+        }
+
+        // Add the property to the assets of the buyer
+        uint[] storage buyerAssets = assets[_newOwner];
+        buyerAssets.push(_propertyID);
+
+        // Remove the property of the assets of the seller
+        uint[] storage sellerAssets = assets[msg.sender];
+        uint[] memory newSellerAssets = new uint[](sellerAssets.length - 1);
+        uint j = 0;
+        for(uint i = 0; i < sellerAssets.length; i++) {
+            if(sellerAssets[i] != _propertyID) {
+                newSellerAssets[j] = _propertyID;
+                j++;
+            }
+        }
+        assets[msg.sender] = newSellerAssets;
+    }
+
     receive() external payable {
         
     }

@@ -18,8 +18,6 @@ module.exports = async function(callback) {
 
     await instance.registerOwner("456def", account1, "Satoshi Nakamoto")
     await instance.registerOwner("123abc", account2, "Vitalik Buterin")
-    let u1 = await instance.owners(account1)
-    let u2 = await instance.owners(account2)
 
     // await printBlocks(instance);
     let blockID0 = await instance.blocksList(0);
@@ -33,7 +31,12 @@ module.exports = async function(callback) {
 
     let propertyIDs = await instance.getPropertyIDs(authority)
     let propertyToSell = BigInt(propertyIDs[1])
-    await saleProcess(instance, account1, authority, propertyToSell, 10)
+
+    await instance.transferProperty(propertyToSell, account1)
+
+    await printBlocks(instance, "State after transfer:") 
+
+    await saleProcess(instance, account2, account1, propertyToSell, 10)
 
     await printBlocks(instance, "State after sale:")   
 
