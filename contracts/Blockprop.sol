@@ -230,19 +230,25 @@ contract Blockprop {
 
         require(blocks[blockIDList[0]].status == saleStatus.Accepted, "The offer was not accepted yet.");
         require(msg.sender == blocks[blockIDList[0]].requester, "You put no offer for this property.");
+        require(msg.value == blocks[blockIDList[0]].offeredAmount, "You sent incorrect amount of funds.");
 
         //send constant taxPercentage(beginning of code) to the autority address
-        owners[authority].etherID.transfer((blocks[blockIDList[0]].offeredAmount/100*taxPercentage));
+        uint taxAmount = (blocks[blockIDList[0]].offeredAmount/100)*taxPercentage;
+        owners[authority].etherID.transfer(msg.value);
         //send offeredAmount to previous owner
-        owners[blocks[blockIDList[0]].owner].etherID.transfer(blocks[blockIDList[0]].offeredAmount);
+        //owners[blocks[blockIDList[0]].owner].etherID.transfer(blocks[blockIDList[0]].offeredAmount);
 
-        //change values in all belonging blocks
-        for(uint i = 0; i < blockIDList.length; i++) {
-                blocks[blockIDList[i]].owner = msg.sender;
-                blocks[blockIDList[i]].status = saleStatus.NotForSale;
-                blocks[blockIDList[i]].requester = address(0);
-                blocks[blockIDList[i]].offeredAmount = 0;               
-        }    
+        // //change values in all belonging blocks
+        // for(uint i = 0; i < blockIDList.length; i++) {
+        //         blocks[blockIDList[i]].owner = msg.sender;
+        //         blocks[blockIDList[i]].status = saleStatus.NotForSale;
+        //         blocks[blockIDList[i]].requester = address(0);
+        //         blocks[blockIDList[i]].offeredAmount = 0;               
+        // }    
+    }
+
+    receive() external payable {
+        
     }
 
     // Function to change wether your property is for sale or not
