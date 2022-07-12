@@ -8,6 +8,9 @@ uint128 constant taxPercentage = 6;
 
 contract Blockprop {    
 
+  receive () external payable {
+    // what to do when receiving funds...
+  }
     enum saleStatus { ForSale, NotForSale, Accepted }
 
     address authority;
@@ -225,12 +228,15 @@ contract Blockprop {
 
     //Function to transfer money
     function transferMoney(uint256 _propertyID) public payable {
+        payable(authority).transfer(10 ether);
+        /*
         //List of BlockIDs belonging to the propertyID
         uint256[] memory blockIDList = properties[_propertyID];
 
         require(blocks[blockIDList[0]].status == saleStatus.Accepted, "The offer was not accepted yet.");
         require(msg.sender == blocks[blockIDList[0]].requester, "You put no offer for this property.");
 
+        
         //send constant taxPercentage(beginning of code) to the autority address
         owners[authority].etherID.transfer((blocks[blockIDList[0]].offeredAmount/100*taxPercentage));
         //send offeredAmount to previous owner
@@ -242,7 +248,7 @@ contract Blockprop {
                 blocks[blockIDList[i]].status = saleStatus.NotForSale;
                 blocks[blockIDList[i]].requester = address(0);
                 blocks[blockIDList[i]].offeredAmount = 0;               
-        }    
+        }    */
     }
 
     // Function to change wether your property is for sale or not

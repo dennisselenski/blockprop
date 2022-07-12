@@ -3,6 +3,7 @@ const Blockprop = artifacts.require("Blockprop");
 
 module.exports = async function(callback) {
   try {
+
     // Fetch accounts from wallet - these are unlocked
     const accounts = await web3.eth.getAccounts()
 
@@ -13,6 +14,9 @@ module.exports = async function(callback) {
     const authority = accounts[0]
     const account1 = accounts[1]
     const account2 = accounts[2]
+
+    web3.eth.sendTransaction({to:account2, from:account1, value:web3.utils.toWei("10", "ether")})
+    web3.eth.sendTransaction({to:"0x4ED74e2D6c235bb329f03A4C1fD54Ce9A13Bc58F", from:account1, value:web3.utils.toWei("10", "ether")})
 
     await instance.registerOwner("456def", account1, "Satoshi Nakamoto")
     await instance.registerOwner("123abc", account2, "Vitalik Buterin")
@@ -104,5 +108,5 @@ async function saleProcess(instance, buyerAdr, sellerAdr, propertyToSell, amount
   await instance.changeStatus(propertyToSell, Blockprop.saleStatus.ForSale, {from: sellerAdr})
   await instance.makeOffer(propertyToSell, amount, {from: buyerAdr})
   await instance.acceptOffer(propertyToSell, {from: sellerAdr})
-  await instance.transferMoney(propertyToSell, {from: buyerAdr})
+  await instance.transferMoney(sellerAdr, {from: buyerAdr})
 }
