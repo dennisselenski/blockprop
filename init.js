@@ -7,7 +7,9 @@ module.exports = async function(callback) {
     const accounts = await web3.eth.getAccounts()
 
     // Fetch the deployed exchange
-    const instance = await Blockprop.deployed()
+    const instance = await Blockprop.deployed()    
+
+    await printBlocks(instance, "State after deployment:") 
 
     // Set up users, account 0 = authority
     const authority = accounts[0]
@@ -21,16 +23,19 @@ module.exports = async function(callback) {
 
     // await printBlocks(instance);
     let blockID0 = await instance.blocksList(0);
-    console.log("split first block");
-    await instance.splitBlock(blockID0);
+    await instance.splitBlock(blockID0);    
+
+    await printBlocks(instance, "State after first block split:") 
 
     await splitAndPrint(authority, instance)
+
+    await printBlocks(instance, "State after property split:") 
 
     let propertyIDs = await instance.getPropertyIDs(authority)
     let propertyToSell = BigInt(propertyIDs[1])
     await saleProcess(instance, account1, authority, propertyToSell, 10)
 
-    await printBlocks(instance)   
+    await printBlocks(instance, "State after sale:")   
 
   }
   catch(error) {
@@ -55,10 +60,10 @@ async function splitAndPrint(authority, instance)
 
   await instance.splitProperty(propertyToSplit, blockNums)
 }
-async function printBlocks(instance)
+async function printBlocks(instance, msg)
 {
   console.log("▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀")
-  console.log("current state of the blocks:")
+  console.log(msg)
   blockList = []
   ownerList = []
   ownerAdressList = []
